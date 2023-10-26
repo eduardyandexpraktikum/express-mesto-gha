@@ -28,6 +28,11 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
+  if (!ObjectId.isValid(userId)) {
+    res.status(400).send({
+      message: "Некорректный id"
+    });
+  };
   User.findById(userId)
     .then((user) => {
       if (!user) {
