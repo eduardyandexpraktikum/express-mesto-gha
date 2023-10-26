@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const createUser = async (req, res) => {
   try {
@@ -28,6 +29,11 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
+  if (!ObjectId.isValid(userId)) {
+    res.status(400).send({
+      message: "Некорректный id"
+    });
+  };
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -40,6 +46,26 @@ const getUserById = (req, res, next) => {
     })
     .catch(next);
 };
+
+// const getUserById = (req, res, next) => {
+//   const { userId } = req.params;
+//   User.findById(userId)
+//     .then((user) => {
+//       if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+//         res.status(400).send({
+//           message: "Некорректный id"
+//         });
+//       }
+//       else if (!user) {
+//         res.status(404).send({
+//           message: "Пользователь не найден"
+//         });
+//       } else {
+//         res.send(user);
+//       }
+//     })
+//     .catch(next);
+// };
 
 const patchMe = async (req, res) => {
   try {
