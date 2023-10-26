@@ -47,26 +47,6 @@ const getUserById = (req, res, next) => {
     .catch(next);
 };
 
-// const getUserById = (req, res, next) => {
-//   const { userId } = req.params;
-//   User.findById(userId)
-//     .then((user) => {
-//       if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-//         res.status(400).send({
-//           message: "Некорректный id"
-//         });
-//       }
-//       else if (!user) {
-//         res.status(404).send({
-//           message: "Пользователь не найден"
-//         });
-//       } else {
-//         res.send(user);
-//       }
-//     })
-//     .catch(next);
-// };
-
 const patchMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
