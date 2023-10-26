@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
-const ObjectId = require('mongoose').Types.ObjectId;
+// const ObjectId = require('mongoose').Types.ObjectId;
 
 const createUser = async (req, res) => {
   try {
@@ -29,6 +29,11 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
+  if (!mongoose.isValidObjectId(userId)) {
+    res.status(400).send({
+      message: "Некорректный id"
+    });
+  }
   User.findById(userId)
     .then((user) => {
       if (!user) {
