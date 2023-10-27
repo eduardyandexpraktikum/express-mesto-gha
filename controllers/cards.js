@@ -49,7 +49,7 @@ const likeCard = (req, res, next) => Card.findByIdAndUpdate(
 )
   .then((card) => {
     if (!card) {
-      res.status(400).send({
+      res.status(404).send({
         message: 'Карточка с указанным _id не найдена.'
       });
     } else {
@@ -65,7 +65,7 @@ const dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
 )
   .then((card) => {
     if (!card) {
-      res.status(400).send({
+      res.status(404).send({
         message: 'Карточка с указанным _id не найдена.'
       });
     } else {
