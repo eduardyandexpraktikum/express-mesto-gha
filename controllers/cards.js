@@ -27,18 +27,28 @@ const postCard = async (req, res) => {
   }
 };
 
+
+
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  User.deleteOne({ _id: cardId })
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         res.status(404).send({
           message: "Карточка не найдена!"
         });
-      } else {
-        res.status(200).send({
-          message: "Карточка не найдена!"
+      } else if (card.owner.toString() !== req.user._id) {
+
+        res.status(400).send({
+          message: "Невозможно удалить карточку"
         });
+      } else {
+        Card.deleteOne({ _id: cardId })
+          .then((card) => {
+            res.status(200).send({
+              message: "Карточка удалена"
+            });
+          })
       }
     })
     .catch(next);
