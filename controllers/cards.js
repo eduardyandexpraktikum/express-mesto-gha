@@ -13,7 +13,7 @@ const postCard = async (req, res) => {
   try {
     const newCard = new Card(req.body);
     newCard.owner = req.user._id;
-    if (req.body.name.length < 2 || req.body.name.length > 30 || !req.body.name) {
+    if (!req.body.link || !req.body.name || req.body.name.length < 2 || req.body.name.length > 30) {
       return res.status(400).send({
         message: "Некорректные данные"
       });
