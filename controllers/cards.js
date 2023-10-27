@@ -36,7 +36,9 @@ const deleteCard = (req, res, next) => {
           message: "Карточка не найдена!"
         });
       } else {
-        res.send(card);
+        res.status(200).send({
+          message: "Карточка не найдена!"
+        });
       }
     })
     .catch(next);
@@ -48,11 +50,16 @@ const likeCard = (req, res, next) => Card.findByIdAndUpdate(
   { new: true },
 )
   .then((card) => {
-    if (!card) {
+    if (!mongoose.isValidObjectId(req.params.cardId)) {
+      res.status(400).send({
+        message: 'Некорректные данные'
+      });
+    } else if (!card) {
       res.status(404).send({
         message: 'Карточка с указанным _id не найдена.'
       });
-    } else {
+    }
+    else {
       res.send(card);
     }
   })
