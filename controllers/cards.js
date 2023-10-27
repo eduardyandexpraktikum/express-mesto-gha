@@ -13,7 +13,13 @@ const postCard = async (req, res) => {
   try {
     const newCard = new Card(req.body);
     newCard.owner = req.user._id;
-    return res.status(201).send(await newCard.save())
+    if (req.body.name.length < 2 || req.body.name.length > 30 || !req.body.name) {
+      return res.status(400).send({
+        message: "Некорректные данные"
+      });
+    } else {
+      return res.status(201).send(await newCard.save())
+    };
   } catch (error) {
     return res.status(500).send({
       message: "Ошибка на сервере",

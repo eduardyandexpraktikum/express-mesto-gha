@@ -33,7 +33,7 @@ const getUserById = (req, res, next) => {
     res.status(400).send({
       message: "Некорректный id"
     });
-  }
+  };
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -52,7 +52,13 @@ const patchMe = async (req, res) => {
     const user = await User.findById(req.user._id)
     user.name = req.body.name;
     user.about = req.body.about;
-    return res.status(201).send(await user.save());
+    if (req.body.name.length < 2 || req.body.name.length > 30) {
+      return res.status(400).send({
+        message: "Некорректные данные"
+      });
+    } else {
+      return res.status(200).send(await user.save());
+    }
   } catch (error) {
     return res.status(500).send({
       message: "Ошибка на сервере",
@@ -64,7 +70,7 @@ const patchAvatar = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
     user.avatar = req.body.avatar;
-    return res.status(201).send(await user.save());
+    return res.status(200).send(await user.save());
   } catch (error) {
     return res.status(500).send({
       message: "Ошибка на сервере",
