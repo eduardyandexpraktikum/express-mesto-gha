@@ -31,13 +31,13 @@ const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
     .then((card) => {
-      if (card.owner.toString() !== req.user._id || !mongoose.isValidObjectId(cardId)) {
-        res.status(400).send({
-          message: "Невозможно удалить карточку"
-        });
-      } else if (!card) {
+      if (!card) {
         res.status(404).send({
           message: "Карточка не найдена!"
+        });
+      } else if (card.owner.toString() !== req.user._id || !mongoose.isValidObjectId(cardId)) {
+        res.status(400).send({
+          message: "Невозможно удалить карточку"
         });
       } else {
         Card.deleteOne({ _id: cardId })
