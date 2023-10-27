@@ -27,20 +27,17 @@ const postCard = async (req, res) => {
   }
 };
 
-
-
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
     .then((card) => {
-      if (!card) {
-        res.status(404).send({
-          message: "Карточка не найдена!"
-        });
-      } else if (card.owner.toString() !== req.user._id) {
-
+      if (card.owner.toString() !== req.user._id || !mongoose.isValidObjectId(cardId)) {
         res.status(400).send({
           message: "Невозможно удалить карточку"
+        });
+      } else if (!card) {
+        res.status(404).send({
+          message: "Карточка не найдена!"
         });
       } else {
         Card.deleteOne({ _id: cardId })
@@ -81,11 +78,16 @@ const dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
   { new: true },
 )
   .then((card) => {
-    if (!card) {
+    if (!mongoose.isValidObjectId(req.params.cardId)) {
+      res.status(400).send({
+        message: 'Некорректные данные'
+      });
+    } else if (!card) {
       res.status(404).send({
         message: 'Карточка с указанным _id не найдена.'
       });
-    } else {
+    }
+    else {
       res.send(card);
     }
   })
