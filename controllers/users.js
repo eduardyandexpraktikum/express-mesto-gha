@@ -52,16 +52,10 @@ const patchMe = async (req, res) => {
     const user = await User.findById(req.user._id)
     user.name = req.body.name;
     user.about = req.body.about;
-    if (user.name.length < 2 || user.name.length > 30 || user.about.length < 2 || user.about.length > 30) {
-      return res.status(400).send({
-        message: "Некорректные данные"
-      });
-    } else {
-      return res.status(200).send(await user.save());
-    }
+    return res.status(200).send(await user.save());
   } catch (error) {
-    return res.status(500).send({
-      message: "Ошибка на сервере",
+    return res.status(400).send({
+      message: "Некорректные данные",
     });
   }
 };
