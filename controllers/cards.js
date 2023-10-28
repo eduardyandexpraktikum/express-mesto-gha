@@ -29,7 +29,7 @@ const postCard = async (req, res) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  if (!mongoose.isValidObjectId(cardId) || card.owner.toString() !== req.user._id) {
+  if (!mongoose.isValidObjectId(cardId)) {
     res.status(400).send({
       message: "Невозможно удалить карточку"
     });
@@ -39,6 +39,10 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         res.status(404).send({
           message: "Карточка не найдена!"
+        });
+      } else if (card.owner.toString() !== req.user._id) {
+        res.status(400).send({
+          message: "Невозможно удалить карточку"
         });
       } else {
         Card.deleteOne({ _id: cardId })
