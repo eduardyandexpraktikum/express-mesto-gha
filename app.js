@@ -23,7 +23,9 @@ app.use(json());
 
 app.use(cardsRouter);
 app.use(usersRouter);
-
+app.use('/', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
+})
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
