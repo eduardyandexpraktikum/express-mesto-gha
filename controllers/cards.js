@@ -56,47 +56,57 @@ const deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-const likeCard = (req, res, next) => Card.findByIdAndUpdate(
-  req.params.cardId,
-  { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-  { new: true },
-)
-  .then((card) => {
-    if (!mongoose.isValidObjectId(req.params.cardId)) {
-      res.status(400).send({
-        message: 'Некорректные данные'
-      });
-    } else if (!card) {
-      res.status(404).send({
-        message: 'Карточка с указанным _id не найдена.'
-      });
-    }
-    else {
-      res.send(card);
-    }
-  })
-  .catch(next);
+const likeCard = (req, res, next) => {
+  if (!mongoose.isValidObjectId(req.params.cardId)) {
+    res.status(400).send({
+      message: "Некорректные данные"
+    });
+  }
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({
+          message: 'Карточка с указанным _id не найдена.'
+        });
+      }
+      else {
+        res.send(card);
+      }
+    })
+    .catch(next);
+}
 
-const dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
-  req.params.cardId,
-  { $pull: { likes: req.user._id } }, // убрать _id из массива
-  { new: true },
-)
-  .then((card) => {
-    if (!mongoose.isValidObjectId(req.params.cardId)) {
-      res.status(400).send({
-        message: 'Некорректные данные'
-      });
-    } else if (!card) {
-      res.status(404).send({
-        message: 'Карточка с указанным _id не найдена.'
-      });
-    }
-    else {
-      res.send(card);
-    }
-  })
-  .catch(next);
+const dislikeCard = (req, res, next) => {
+  if (!mongoose.isValidObjectId(req.params.cardId)) {
+    res.status(400).send({
+      message: "Некорректные данные"
+    });
+  }
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true },
+  )
+    .then((card) => {
+      if (!mongoose.isValidObjectId(req.params.cardId)) {
+        res.status(400).send({
+          message: 'Некорректные данные'
+        });
+      } else if (!card) {
+        res.status(404).send({
+          message: 'Карточка с указанным _id не найдена.'
+        });
+      }
+      else {
+        res.send(card);
+      }
+    })
+    .catch(next);
+}
 
 module.exports = {
   getCards,
