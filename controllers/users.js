@@ -54,7 +54,7 @@ const patchMe = async (req, res) => {
     user.name = req.body.name;
     user.about = req.body.about;
     return res.status(STATUS_CODES.OK).send(await user.save());
-  } catch (error) {
+  } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(STATUS_CODES.BAD_REQUEST).send({
         message: "Некорректные данные",
