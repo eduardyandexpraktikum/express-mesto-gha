@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
+const STATUS_CODES = require('../constants/errors.js');
 // const ObjectId = require('mongoose').Types.ObjectId;
 
 const createUser = async (req, res) => {
@@ -8,11 +9,11 @@ const createUser = async (req, res) => {
     return res.status(201).send(await newUser.save())
   } catch (error) {
     if (error.name === 'ValidationError') {
-      res.status(400).send({
+      res.status(STATUS_CODES.BAD_REQUEST).send({
         message: "Переданы некорректные данные при создании пользователя",
       });
     } else {
-      return res.status(500).send({
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: "Ошибка на сервере",
       });
     }
@@ -30,14 +31,14 @@ const getUsers = (req, res, next) => {
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
   if (!mongoose.isValidObjectId(userId)) {
-    res.status(400).send({
+    res.status(STATUS_CODES.BAD_REQUEST).send({
       message: "Некорректный id"
     });
   };
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({
+        res.status(STATUS_CODES.NOT_FOUND).send({
           message: "Пользователь не найден"
         });
       } else {
@@ -52,11 +53,17 @@ const patchMe = async (req, res) => {
     const user = await User.findById(req.user._id)
     user.name = req.body.name;
     user.about = req.body.about;
-    return res.status(200).send(await user.save());
+    return res.status(STATUS_CODES.OK).send(await user.save());
   } catch (error) {
-    return res.status(400).send({
-      message: "Некорректные данные",
-    });
+    if (err.name === 'ValidationError') {
+      return res.status(STATUS_CODES.BAD_REQUEST).send({
+        message: "Некорректные данные",
+      });
+    } else {
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+        message: "Ошибка на сервере",
+      });
+    }
   }
 };
 
@@ -64,11 +71,17 @@ const patchAvatar = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
     user.avatar = req.body.avatar;
-    return res.status(200).send(await user.save());
+    return res.status(STATUS_CODES.OK).send(await user.save());
   } catch (error) {
-    return res.status(500).send({
-      message: "Ошибка на сервере",
-    });
+    if (error.name === 'ValidationError') {
+      return res.status(STATUS_CODES.BAD_REQUEST).send({
+        message: "Ошибка на сервере",
+      });
+    } else {
+      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+        message: "Ошибка на сервере",
+      });
+    }
   }
 };
 
