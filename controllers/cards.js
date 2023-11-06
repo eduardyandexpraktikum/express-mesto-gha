@@ -45,7 +45,7 @@ const deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        res.status(STATUS_CODES.BAD_REQUEST).send({
+        res.status(STATUS_CODES.NOT_FOUND).send({
           message: "Карточка не найдена!"
         });
       } else if (card.owner.toString() !== req.user._id) {
