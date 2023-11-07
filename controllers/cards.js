@@ -2,12 +2,14 @@ const mongoose = require('mongoose');
 const Card = require('../models/card');
 const STATUS_CODES = require('../constants/errors');
 
-const getCards = (req, res, next) => {
+const getCards = (req, res) => {
   Card.find({})
     .then((cards) => {
       res.send(cards);
     })
-    .catch(next);
+    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+      message: 'Ошибка на сервере',
+    }));
 };
 
 const postCard = async (req, res) => {
@@ -32,31 +34,32 @@ const deleteCard = (req, res) => {
   const { cardId } = req.params;
   if (!mongoose.isValidObjectId(cardId)) {
     res.status(STATUS_CODES.BAD_REQUEST).send({
-      message: 'Невозможно удалить карточку: несуществующий id',
+      message: 'Невозможно удалить карточку: невалидный _id',
     });
-  }
-  Card.findById(cardId)
-    .then((card) => {
-      if (!card) {
-        res.status(STATUS_CODES.NOT_FOUND).send({
-          message: 'Карточка не найдена!',
-        });
-      } else if (card.owner.toString() !== req.user._id) {
-        res.status(STATUS_CODES.FORBIDDEN).send({
-          message: 'Невозможно удалить карточку: это не ваша карточка',
-        });
-      } else {
-        Card.deleteOne({ _id: cardId })
-          .then(() => {
-            res.status(STATUS_CODES.OK).send({
-              message: 'Карточка удалена',
-            });
+  } else {
+    Card.findById(cardId)
+      .then((card) => {
+        if (!card) {
+          res.status(STATUS_CODES.NOT_FOUND).send({
+            message: 'Карточка не найдена!',
           });
-      }
-    })
-    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
-    }));
+        } else if (card.owner.toString() !== req.user._id) {
+          res.status(STATUS_CODES.FORBIDDEN).send({
+            message: 'Невозможно удалить карточку: это не ваша карточка',
+          });
+        } else {
+          Card.deleteOne({ _id: cardId })
+            .then(() => {
+              res.status(STATUS_CODES.OK).send({
+                message: 'Карточка удалена',
+              });
+            });
+        }
+      })
+      .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+        message: 'Ошибка на сервере',
+      }));
+  }
 };
 
 const likeCard = (req, res) => {

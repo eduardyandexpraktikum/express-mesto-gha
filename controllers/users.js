@@ -7,8 +7,8 @@ const createUser = async (req, res) => {
   try {
     const newUser = new User(req.body);
     res.status(201).send(await newUser.save());
-  } catch (error) {
-    if (error.name === 'ValidationError') {
+  } catch (err) {
+    if (err.name === 'ValidationError') {
       res.status(STATUS_CODES.BAD_REQUEST).send({
         message: 'Переданы некорректные данные при создании пользователя',
       });
@@ -20,15 +20,17 @@ const createUser = async (req, res) => {
   }
 };
 
-const getUsers = (req, res, next) => {
+const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
       res.send(users);
     })
-    .catch(next);
+    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+      message: 'Ошибка на сервере',
+    }));
 };
 
-const getUserById = (req, res, next) => {
+const getUserById = (req, res) => {
   const { userId } = req.params;
   if (!mongoose.isValidObjectId(userId)) {
     res.status(STATUS_CODES.BAD_REQUEST).send({
@@ -45,7 +47,9 @@ const getUserById = (req, res, next) => {
         res.send(user);
       }
     })
-    .catch(next);
+    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+      message: 'Ошибка на сервере',
+    }));
 };
 
 const patchMe = async (req, res) => {
@@ -74,7 +78,7 @@ const patchAvatar = async (req, res) => {
   } catch (error) {
     if (error.name === 'ValidationError') {
       return res.status(STATUS_CODES.BAD_REQUEST).send({
-        message: 'Ошибка на сервере',
+        message: 'Некорректные данные',
       });
     }
     return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
