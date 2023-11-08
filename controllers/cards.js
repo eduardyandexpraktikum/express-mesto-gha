@@ -67,24 +67,25 @@ const likeCard = (req, res) => {
     res.status(STATUS_CODES.BAD_REQUEST).send({
       message: 'Некорректные данные',
     });
+  } else {
+    Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { new: true },
+    )
+      .then((card) => {
+        if (!card) {
+          res.status(STATUS_CODES.NOT_FOUND).send({
+            message: 'Карточка с указанным _id не найдена.',
+          });
+        } else {
+          res.send(card);
+        }
+      })
+      .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+        message: 'Ошибка на сервере',
+      }));
   }
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true },
-  )
-    .then((card) => {
-      if (!card) {
-        res.status(STATUS_CODES.NOT_FOUND).send({
-          message: 'Карточка с указанным _id не найдена.',
-        });
-      } else {
-        res.send(card);
-      }
-    })
-    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
-    }));
 };
 
 const dislikeCard = (req, res) => {
@@ -92,24 +93,25 @@ const dislikeCard = (req, res) => {
     res.status(STATUS_CODES.BAD_REQUEST).send({
       message: 'Некорректные данные',
     });
+  } else {
+    Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { new: true },
+    )
+      .then((card) => {
+        if (!card) {
+          res.status(STATUS_CODES.NOT_FOUND).send({
+            message: 'Карточка с указанным _id не найдена.',
+          });
+        } else {
+          res.send(card);
+        }
+      })
+      .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+        message: 'Ошибка на сервере',
+      }));
   }
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true },
-  )
-    .then((card) => {
-      if (!card) {
-        res.status(STATUS_CODES.NOT_FOUND).send({
-          message: 'Карточка с указанным _id не найдена.',
-        });
-      } else {
-        res.send(card);
-      }
-    })
-    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
-    }));
 };
 
 module.exports = {
