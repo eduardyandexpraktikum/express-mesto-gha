@@ -10,7 +10,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 const app = express();
 const { json } = require('express');
-const { login, createUser } = require('../controllers/users');
+const { login, createUser } = require('./controllers/users');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 
