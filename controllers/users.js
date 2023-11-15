@@ -1,12 +1,30 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const STATUS_CODES = require('../constants/errors');
-// const ObjectId = require('mongoose').Types.ObjectId;
 
 const createUser = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    res.status(201).send(await newUser.save());
+    const {
+      name,
+      about,
+      avatar,
+      email,
+      password,
+    } = req.body;
+    const hash = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash
+    })
+    return res.status(201).send({
+      email: newUser.email,
+      _id: newUser._id,
+    })
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(STATUS_CODES.BAD_REQUEST).send({
@@ -19,6 +37,40 @@ const createUser = async (req, res) => {
     }
   }
 };
+
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(STATUS_CODES.BAD_REQUEST).send({
+        message: 'Неподходящий логин и/или пароль',
+      })
+    }
+    const loginUser = await User.findOne({ email });
+    if (!loginUser) {
+      return res.status(STATUS_CODES.FORBIDDEN).send({
+        message: 'Некорректный логин и/или пароль'
+      })
+    }
+    const result = bcrypt.compare(password, loginUser.password)
+    if (!result) {
+      res.status(STATUS_CODES.FORBIDDEN).send({
+        message: 'Некорректный логин и/или пароль'
+      })
+    }
+
+    const payload = { _id: loginUser._id }
+
+    const token = jwt.sign(payload, 'VERY_SECRET_KEY', { expiresIn: '7d' })
+    res.status(STATUS_CODES.OK).send({
+      user: payload
+    })
+  } catch (err) {
+    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+      message: 'Ошибка на сервере',
+    })
+  }
+}
 
 const getUsers = (req, res) => {
   User.find({})
@@ -88,6 +140,7 @@ const patchAvatar = async (req, res) => {
 };
 
 module.exports = {
+  login,
   getUserById,
   getUsers,
   createUser,
