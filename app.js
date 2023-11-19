@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const checkAuth = require('./middlewares/auth');
+const { checkAuth } = require('./middlewares/auth');
 const { signInValidation } = require('./middlewares/validator');
 
 const { PORT = 3000 } = process.env;
