@@ -48,7 +48,7 @@ const login = async (req, res) => {
     }
     const loginUser = await User.findOne({ email }).select('+password');
     if (!loginUser) {
-      return res.status(STATUS_CODES.FORBIDDEN).send({
+      return res.status(STATUS_CODES.UNAUTHORIZED).send({
         message: 'Некорректный логин и/или пароль'
       })
     }
@@ -108,6 +108,23 @@ const getUserById = (req, res) => {
     }));
 };
 
+const getMe = (req, res) => {
+  const myself = req.user._id;
+  User.findById(myself)
+    .then((user) => {
+      if (!user) {
+        res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Нет информации'
+        });
+      } else {
+        res.send(user);
+      }
+    })
+    .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+      message: 'Ошибка на сервере',
+    }));
+};
+
 const patchMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -146,6 +163,7 @@ const patchAvatar = async (req, res) => {
 module.exports = {
   login,
   getUserById,
+  getMe,
   getUsers,
   createUser,
   patchMe,
