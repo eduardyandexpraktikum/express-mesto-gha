@@ -4,10 +4,10 @@ const {
   getUsers, getUserById, patchMe, patchAvatar,
 } = require('../controllers/users');
 
-userRouter.get('/users', getUsers);
-userRouter.get('/users/:userId', getUserById);
+userRouter.get('/', getUsers);
+userRouter.get('/:userId', getUserById);
 
-userRouter.patch('/users/me', patchMe);
-userRouter.patch('/users/me/avatar', patchAvatar);
+userRouter.patch('/me', patchMe);
+userRouter.patch('/me/avatar', patchAvatar);
 
 module.exports = userRouter;
