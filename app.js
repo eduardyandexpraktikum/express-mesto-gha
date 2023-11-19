@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { signInValidation, signUpValidation } = require('./middlewares/validator');
+const { signUpValidator, signInValidator } = require('./middlewares/validator');
 const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
@@ -18,8 +18,8 @@ const usersRouter = require('./routes/users');
 
 app.use(json());
 
-app.post('/signin', signInValidation, login);
-app.post('/signup', signUpValidation, createUser);
+app.post('/signin', signInValidator, login);
+app.post('/signup', signUpValidator, createUser);
 
 app.use(checkAuth);
 
