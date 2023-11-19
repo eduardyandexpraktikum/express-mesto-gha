@@ -68,7 +68,7 @@ const login = async (req, res) => {
     const payload = { _id: loginUser._id }
 
     const token = jwt.sign(payload, 'VERY_SECRET_KEY', { expiresIn: '7d' })
-    res.status(STATUS_CODES.OK).send(token)
+    res.status(STATUS_CODES.OK).send({ token })
   } catch (err) {
     return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
       message: 'Ошибка на сервере',
