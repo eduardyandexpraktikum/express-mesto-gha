@@ -22,11 +22,18 @@ const createUser = async (req, res) => {
       password: hash
     })
     return res.status(201).send({
+      name: newUser.name,
+      about: newUser.about,
+      avatar: newUser.avatar,
       email: newUser.email,
       _id: newUser._id,
     })
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err.code === 11000) {
+      res.status(STATUS_CODES.CONFLICT).send({
+        message: 'Такой email уже существует',
+      });
+    } else if (err.name === 'ValidationError') {
       res.status(STATUS_CODES.BAD_REQUEST).send({
         message: 'Переданы некорректные данные при создании пользователя',
       });
@@ -110,6 +117,7 @@ const getUserById = (req, res) => {
 
 const getMe = (req, res) => {
   const myself = req.user._id;
+  console.log(myself)
   User.findById(myself)
     .then((user) => {
       if (!user) {

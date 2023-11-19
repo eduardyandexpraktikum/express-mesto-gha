@@ -13,8 +13,8 @@ const { checkAuth } = require('./middlewares/auth');
 const app = express();
 const { json } = require('express');
 const { login, createUser } = require('./controllers/users');
-const cardsRouter = require('./routes/cards');
-const usersRouter = require('./routes/users');
+const cardRouter = require('./routes/cards');
+const userRouter = require('./routes/users');
 
 app.use(json());
 
@@ -23,8 +23,8 @@ app.post('/signup', signUpValidator, createUser);
 
 app.use(checkAuth);
 
-app.use('/cards', cardsRouter);
-app.use('/users', usersRouter);
+app.use('/cards', cardRouter);
+app.use('/users', userRouter);
 app.use('/', (req, res, next) => {
   next(res.status(404).send({
     message: 'Невозможно отобразить страницу',
