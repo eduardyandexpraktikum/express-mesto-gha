@@ -5,7 +5,7 @@ const checkAuth = async (req, res, next) => {
   try {
     const { authorization } = req.headers;
     if (!authorization || !authorization.startsWith('Bearer ')) {
-      return res.status(STATUS_CODES.BAD_REQUEST).send({
+      return res.status(STATUS_CODES.UNAUTHORIZED).send({
         message: 'Вы не авторизованы'
       })
     }

@@ -46,13 +46,19 @@ const login = async (req, res) => {
         message: 'Неподходящий логин и/или пароль',
       })
     }
-    const loginUser = await User.findOne({ email });
+    const loginUser = await User.findOne({ email }).select('+password');
     if (!loginUser) {
       return res.status(STATUS_CODES.FORBIDDEN).send({
         message: 'Некорректный логин и/или пароль'
       })
     }
     const result = bcrypt.compare(password, loginUser.password)
+      .then((matched) => {
+        if (!matched) {
+          return false;
+        }
+        return true;
+      });
     if (!result) {
       res.status(STATUS_CODES.FORBIDDEN).send({
         message: 'Некорректный логин и/или пароль'
@@ -62,9 +68,7 @@ const login = async (req, res) => {
     const payload = { _id: loginUser._id }
 
     const token = jwt.sign(payload, 'VERY_SECRET_KEY', { expiresIn: '7d' })
-    res.status(STATUS_CODES.OK).send({
-      user: payload
-    })
+    res.status(STATUS_CODES.OK).send(token)
   } catch (err) {
     return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
       message: 'Ошибка на сервере',
