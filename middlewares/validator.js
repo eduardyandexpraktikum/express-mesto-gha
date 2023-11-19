@@ -19,7 +19,7 @@ const signUpValidator = celebrate({
   }),
 });
 
-const ProfileValidator = celebrate({
+const profileValidator = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
@@ -54,7 +54,7 @@ const postCardValidator = celebrate({
 module.exports = {
   signInValidator,
   signUpValidator,
-  ProfileValidator,
+  profileValidator,
   cardIdValidator,
   userIdValidator,
   AvatarValidator,
