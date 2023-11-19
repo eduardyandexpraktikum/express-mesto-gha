@@ -20,8 +20,9 @@ app.use(json());
 
 app.post('/signin', signInValidation, login);
 app.post('/signup', signInValidation, createUser);
-app.use('/cards', checkAuth, cardsRouter);
-app.use('/users', checkAuth, usersRouter);
+app.use(checkAuth);
+app.use('/cards', cardsRouter);
+app.use('/users', usersRouter);
 app.use('/', (req, res, next) => {
   next(res.status(404).send({
     message: 'Невозможно отобразить страницу',
