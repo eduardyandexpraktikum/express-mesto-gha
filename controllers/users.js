@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const STATUS_CODES = require('../constants/errors');
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const {
       name,
@@ -39,8 +39,9 @@ const createUser = async (req, res) => {
       });
     } else {
       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-        message: 'Ошибка на сервере',
+        message: 'На сервере произошла ошибка',
       });
+      next(err);
     }
   }
 };
@@ -78,7 +79,7 @@ const login = async (req, res) => {
     res.status(STATUS_CODES.OK).send({ token })
   } catch (err) {
     return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
+      message: 'На сервере произошла ошибка',
     })
   }
 }
@@ -89,7 +90,7 @@ const getUsers = (req, res) => {
       res.send(users);
     })
     .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
+      message: 'На сервере произошла ошибка',
     }));
 };
 
@@ -111,7 +112,7 @@ const getUserById = (req, res) => {
       }
     })
     .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
+      message: 'На сервере произошла ошибка',
     }));
 };
 
@@ -129,7 +130,7 @@ const getMe = (req, res) => {
       }
     })
     .catch(() => res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
+      message: 'На сервере произошла ошибка',
     }));
 };
 
@@ -146,7 +147,7 @@ const patchMe = async (req, res) => {
       });
     }
     return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
+      message: 'На сервере произошла ошибка',
     });
   }
 };
@@ -163,7 +164,7 @@ const patchAvatar = async (req, res) => {
       });
     }
     return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
-      message: 'Ошибка на сервере',
+      message: 'На сервере произошла ошибка',
     });
   }
 };
